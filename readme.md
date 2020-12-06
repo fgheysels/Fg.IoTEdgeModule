@@ -1,5 +1,8 @@
 # Fg.IoTEdgeModule
 
+[![Build Status](https://frederikgheysels.visualstudio.com/GitHub%20Pipelines/_apis/build/status/IoTEdgeModule/Fg.IoTEdgeModule%20CI?branchName=main)](https://frederikgheysels.visualstudio.com/GitHub%20Pipelines/_build/latest?definitionId=9&branchName=main)
+[![NuGet Badge](https://buildstats.info/nuget/fg.iotedgemodule?includePreReleases=true)](https://www.nuget.org/packages/Fg.IoTEdgeModule)
+
 ## Introduction
 
 This project provides some helpful functionality to easily create better modules for Azure IoT Edge.
