@@ -15,4 +15,65 @@ The `CreateModuleClient` extension method on `IHostBuilder` allows to easily cre
 Using this method allows you to easily setup your IoT Edge module as a hosted service:
 
 ```csharp
+static async Task Main(string[] args)
+{
+    var host = Host.CreateDefaultBuilder(args)
+                    .ConfigureIoTEdgeModuleClient(TransportType.Mqtt_Tcp_Only, configureModuleClient =>
+                    {
+                        configureModuleClient.OpenAsync().Wait();
+                        configureModuleClient.SetDesiredPropertyUpdateCallbackAsync(OnDesiredPropertiesChanged, configureModuleClient).Wait();
+                    })
+                    .ConfigureLogging(logging => logging.AddConsole(consoleLogging =>
+                    {
+                        consoleLogging.Format = ConsoleLoggerFormat.Systemd;
+                        consoleLogging.TimestampFormat = "dd/MM/yyyy HH:mm:ss zz";
+                    }))
+                    .ConfigureServices(services =>
+                    {
+                        // Add other dependencies to the DI container
+                        // ...
+
+                        // 
+                        services.AddHostedService<App>();
+                    })
+                    .UseConsoleLifetime()
+                    .Build();
+
+    await host.RunAsync();
+}
+
+private static OnDesiredPropertiesChanged(TwinCollection desiredProperties, object userContext) {}
+```
+
+The actual IoT Edge Module's functionality is in this example implemented in the `App` class, which looks like this:
+
+```csharp
+internal class App : IHostedService
+{
+
+    private readonly ModuleClient _iotHubModuleClient;
+    private readonly ILogger<App> _logger;
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="App"/> class.
+    /// </summary>
+    public App(ModuleClient iotHubModuleClient, ILogger<App> logger)
+    {
+        _iotHubModuleClient = iotHubModuleClient;
+        _logger = logger;
+    }
+
+    public async Task StartAsync(CancellationToken cancellationToken)
+    {
+        while( !cancellationToken.IsCancellationRequested )
+        {
+        }
+    }
+
+    public  Task StopAsync(CancellationToken cancellationToken)
+    {
+        // TODO: clean up
+        return Task.CompletedTask;
+    }
+}
 ```
