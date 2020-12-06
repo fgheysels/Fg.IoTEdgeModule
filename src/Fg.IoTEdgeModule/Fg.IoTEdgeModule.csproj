@@ -2,6 +2,14 @@
 
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
+    <Authors>Frederik Gheysels</Authors>
+    <Copyright>Copyright © 2020 Frederik Gheysels</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/fgheysels/Fg.IoTEdgeModule</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/fgheysels/Fg.IoTEdgeModule</RepositoryUrl>
+    <RepositoryType>Git</RepositoryType>
+    <Description>Provides utilities to easily create Azure IoT Edge modules as a hosted service</Description>
+    <PackageTags>Azure IoT Edge Host HostBuilder</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
