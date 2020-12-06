@@ -1,10 +1,10 @@
 ﻿using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Client.Transport.Mqtt;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using System;
 
-namespace Fg.IoTEdgeModule
+// ReSharper disable once CheckNamespace
+namespace Microsoft.Extensions.Hosting
 {
     public static class HostBuilderExtensions
     {
