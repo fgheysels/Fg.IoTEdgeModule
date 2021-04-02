@@ -48,7 +48,7 @@ private static OnDesiredPropertiesChanged(TwinCollection desiredProperties, obje
 The actual IoT Edge Module's functionality is in this example implemented in the `App` class, which looks like this:
 
 ```csharp
-internal class App : IHostedService
+internal class App : BackgroundService
 {
 
     private readonly ModuleClient _iotHubModuleClient;
@@ -63,10 +63,11 @@ internal class App : IHostedService
         _logger = logger;
     }
 
-    public async Task StartAsync(CancellationToken cancellationToken)
+    protected override async Task ExecuteAsync(CancellationToken cancellationToken)
     {
         while( !cancellationToken.IsCancellationRequested )
         {
+            // Do some work here
         }
     }
 
