@@ -3,7 +3,6 @@ using System;
 using System.Runtime.InteropServices;
 using System.Runtime.Loader;
 using System.Threading;
-using Optional;
 
 namespace Fg.IoTEdgeModule
 {
@@ -18,13 +17,13 @@ namespace Fg.IoTEdgeModule
         {
             var cts = new CancellationTokenSource();
             var completed = new ManualResetEventSlim();
-            Option<object> handler = Option.None<object>();
+            object handler = null;
 
             if (RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
                 WindowsShutdownHandler.HandlerRoutine hr = WindowsShutdownHandler.Init(cts, completed, shutdownWaitPeriod, logger);
-                //handler = hr;
-                handler = Option.Some<object>(hr);
+
+                handler = hr;
             }
             else
             {
@@ -35,7 +34,7 @@ namespace Fg.IoTEdgeModule
         }
 
         private readonly ManualResetEventSlim _doneSignal;
-        private readonly object _handler;
+        private readonly object _shutdownHandlerRoutine;
         public CancellationTokenSource CancellationTokenSource { get; }
 
         /// <summary>
@@ -45,17 +44,17 @@ namespace Fg.IoTEdgeModule
         {
             _doneSignal.Set();
 
-            if (_handler != null)
+            if (_shutdownHandlerRoutine != null)
             {
-                GC.KeepAlive(_handler);
+                GC.KeepAlive(_shutdownHandlerRoutine);
             }
         }
 
-        private ShutdownHandler(CancellationTokenSource cts, ManualResetEventSlim doneSignal, Option<object> handler)
+        private ShutdownHandler(CancellationTokenSource cts, ManualResetEventSlim doneSignal, object shutdownHandlerRoutine)
         {
             CancellationTokenSource = cts;
             _doneSignal = doneSignal;
-            _handler = handler;
+            _shutdownHandlerRoutine = shutdownHandlerRoutine;
         }
 
         private static class LinuxShutdownHandler
