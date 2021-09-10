@@ -124,6 +124,7 @@ using( var host = CreateHostBuilder().Build())
     var shutdownHandler = ShutdownHandler.Create(TimeSpan.FromSeconds(20), logger)
 
     await host.StartAsync(shutdownHandler.CancellationTokenSource.Token);
+    logger.LogInformation("Module stopping ... ");
     await host.WaitForShutdownAsync(shutdownHandler.CancellationTokenSource.Token);
 
     logger.LogInformation("Module stopped");
