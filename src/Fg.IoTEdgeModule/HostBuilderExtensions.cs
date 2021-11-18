@@ -8,6 +8,14 @@ namespace Microsoft.Extensions.Hosting
 {
     public static class HostBuilderExtensions
     {
+        /// <summary>
+        /// Configures and registers a <see cref="ModuleClient"/> instance as a Singleton.
+        /// </summary>
+        /// <remarks>The ModuleClient is used to interact with an IoT Edge module</remarks>
+        /// <param name="builder"></param>
+        /// <param name="transportType">The protocol that must be used by the moduleclient</param>
+        /// <param name="configureModuleClient">An action that describes how the ModuleClient must be configured.</param>
+        /// <returns></returns>
         public static IHostBuilder ConfigureIoTEdgeModuleClient(this IHostBuilder builder,
                                                                 TransportType transportType,
                                                                 Action<ModuleClient> configureModuleClient = null)
