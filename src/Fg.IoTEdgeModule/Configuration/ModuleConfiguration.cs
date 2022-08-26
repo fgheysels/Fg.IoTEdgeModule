@@ -2,8 +2,6 @@
 using Microsoft.Azure.Devices.Shared;
 using Microsoft.Extensions.Logging;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace Fg.IoTEdgeModule.Configuration
@@ -21,7 +19,7 @@ namespace Fg.IoTEdgeModule.Configuration
 
         // TODO: find a way to 'force' inheritors to create / override a factory method for this type.
         //       The factory method should read values from the Module Twin, and set them in the configuration.
-
+        
         /// <summary>
         /// Reports the configuration settings via the Module Twin reported properties.
         /// </summary>
@@ -47,6 +45,6 @@ namespace Fg.IoTEdgeModule.Configuration
         /// Set the Module's specific Configuration settings in the Module Twin.
         /// </summary>
         /// <param name="reportedProperties">The TwinCollection that must be used to set the reported properties.</param>
-        protected abstract void SetReportedProperties(TwinCollection reportedProperties);        
+        protected abstract void SetReportedProperties(TwinCollection reportedProperties);
     }
 }
