@@ -2,24 +2,38 @@
 using Microsoft.Azure.Devices.Shared;
 using Microsoft.Extensions.Logging;
 using System;
+using System.Reflection;
 using System.Threading.Tasks;
 
 namespace Fg.IoTEdgeModule.Configuration
 {
     public abstract class ModuleConfiguration
     {
-        protected ILogger<ModuleConfiguration> Logger;
+        protected ILogger Logger;
 
-        protected ModuleConfiguration(ILogger<ModuleConfiguration> logger)
+        protected ModuleConfiguration(ILogger logger)
         {
             Logger = logger;
         }
 
         protected abstract string ModuleName { get; }
 
-        // TODO: find a way to 'force' inheritors to create / override a factory method for this type.
-        //       The factory method should read values from the Module Twin, and set them in the configuration.
-        
+        public static async Task<TModuleConfiguration> CreateFromTwinAsync<TModuleConfiguration>(ModuleClient moduleClient, ILogger logger) where TModuleConfiguration : ModuleConfiguration
+        {
+            var config = 
+                (TModuleConfiguration)Activator.CreateInstance(typeof(TModuleConfiguration),
+                                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, 
+                                                        null, new object[] { logger }, null);
+
+            var moduleTwin = await moduleClient.GetTwinAsync();
+
+            config.InitializeFromTwin(moduleTwin.Properties.Desired);
+
+            await config.UpdateReportedPropertiesAsync(moduleClient);
+
+            return config;
+        }
+
         /// <summary>
         /// Reports the configuration settings via the Module Twin reported properties.
         /// </summary>
@@ -37,9 +51,11 @@ namespace Fg.IoTEdgeModule.Configuration
             }
             catch (Exception ex)
             {
-                Logger.LogError($"An error occured while trying to update the Module Twin's reported properties: {ex.Message}");
+                Logger.LogError($"An error occurred while trying to update the Module Twin's reported properties: {ex.Message}");
             }
         }
+
+        protected abstract void InitializeFromTwin(TwinCollection desiredProperties);
 
         /// <summary>
         /// Set the Module's specific Configuration settings in the Module Twin.
