@@ -20,10 +20,13 @@ namespace Fg.IoTEdgeModule.Configuration
 
         public static async Task<TModuleConfiguration> CreateFromTwinAsync<TModuleConfiguration>(ModuleClient moduleClient, ILogger logger) where TModuleConfiguration : ModuleConfiguration
         {
-            var config = 
-                (TModuleConfiguration)Activator.CreateInstance(typeof(TModuleConfiguration),
-                                                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, 
-                                                        null, new object[] { logger }, null);
+            var config =
+                (TModuleConfiguration)Activator.CreateInstance(
+                    typeof(TModuleConfiguration),
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                    null, 
+                    new object[] { logger }, 
+                    null);
 
             var moduleTwin = await moduleClient.GetTwinAsync();
 
