@@ -7,6 +7,9 @@ using System.Threading.Tasks;
 
 namespace Fg.IoTEdgeModule.Configuration
 {
+    /// <summary>
+    /// Base class for representing an IoT Edge Module's configuration.
+    /// </summary>
     public abstract class ModuleConfiguration
     {
         protected ILogger Logger;
