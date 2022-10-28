@@ -45,7 +45,9 @@ stages:
                 $versionSuffix = ""
 
                 if( true -eq ${{parameters.PackagePreview}}) {
+                    Write-Host "set version suffix"
                     $versionSuffix = "-preview.$(Rev:rr)"
+                    Write-Host "version suffix is $versionSuffix"
                 }
 
                 Write-Host "##vso[task.setvariable variable=PackageVersion]${{parameters.PackageMajorVersion}}.${{parameters.PackageMinorVersion}}.${{parameters.PackagePatchVersion}}$versionSuffix"
