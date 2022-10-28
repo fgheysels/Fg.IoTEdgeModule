@@ -42,11 +42,11 @@ stages:
 
               Write-Host "##vso[task.setvariable variable=PackageVersion]${{parameters.PackageMajorVersion}}.${{parameters.PackageMinorVersion}}.${{parameters.PackagePatchVersion}}$versionSuffix"
 
-          - task: DotNetCoreCLI@2
-            displayName: 'Build Fg.IoTEdgeModule solution'
-            inputs:
-              projects: 'src/Fg.IoTEdgeModule.sln'    
-              arguments: --configuration $(Build.Configuration) 
+        - task: DotNetCoreCLI@2
+          displayName: 'Build Fg.IoTEdgeModule solution'
+          inputs:
+            projects: 'src/Fg.IoTEdgeModule.sln'    
+            arguments: --configuration $(Build.Configuration) 
 
   - stage: Release
     jobs:
