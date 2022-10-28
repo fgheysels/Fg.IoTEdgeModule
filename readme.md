@@ -165,7 +165,7 @@ public class MyModuleConfiguration : ModuleConfiguration
 Usage:
 
 ```csharp
-var configuration = ModuleConfiguration.CreateFromTwinAsync<MyModuleConfiguration>(moduleClient, logger);
+var configuration = await ModuleConfiguration.CreateFromTwinAsync<MyModuleConfiguration>(moduleClient, logger);
 
 // Use the settings that originate from the ModuleTwin in some other classes.
 var processor = new MyProcessor(configuration.SomeIntegerProperty);

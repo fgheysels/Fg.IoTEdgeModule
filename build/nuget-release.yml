@@ -49,12 +49,10 @@ stages:
             script: |
               $versionSuffix = ""
 
-              Write-Host "parameter: ${{parameters.PackagePreview}}"
-
+              # Double $ before the parameter expression to make sure that the return type is
+              # treated as a boolean.
               if( $true -eq $${{parameters.PackagePreview}}) {
-                  Write-Host "set version suffix"
                   $versionSuffix = "-beta-$(Build.BuildNumber)"
-                  Write-Host "version suffix is $versionSuffix"
               }
 
               Write-Host "##vso[task.setvariable variable=PackageVersion]${{parameters.PackageMajorVersion}}.${{parameters.PackageMinorVersion}}.${{parameters.PackagePatchVersion}}$versionSuffix"
