@@ -1,4 +1,4 @@
-name: $(date:yyyyMMdd)$(rev:.r)
+name: $(date:yyyyMMdd)$(rev:-rr)
 
 trigger: none
 pr: none
@@ -10,6 +10,8 @@ parameters:
   type: number
 - name: PackagePatchVersion
   type: number
+- name: PackagePreview
+  type: boolean  
 
 
 variables:
@@ -22,12 +24,12 @@ stages:
       - job: Compile_and_test
         pool:
           vmImage: 'ubuntu-latest'
-        steps:          
-          - task: DotNetCoreCLI@2
-            displayName: 'Build Fg.IoTEdgeModule solution'
-            inputs:
-              projects: 'src/Fg.IoTEdgeModule.sln'    
-              arguments: --configuration $(Build.Configuration) 
+        steps:
+        - task: DotNetCoreCLI@2
+          displayName: 'Build Fg.IoTEdgeModule solution'
+          inputs:
+            projects: 'src/Fg.IoTEdgeModule.sln'
+            arguments: --configuration $(Build.Configuration) 
 
   - stage: Release
     jobs:
@@ -35,33 +37,49 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'  
         steps:
-          - task: Powershell@2
-            displayName: 'Set version environment variable'
-            inputs:
-              targetType: inline
-              script: |
-                Write-Host "##vso[task.setvariable variable=PackageVersion]${{parameters.PackageMajorVersion}}.${{parameters.PackageMinorVersion}}.${{parameters.PackagePatchVersion}}"           
-          - task: DotNetCoreCLI@2
-            displayName: Package nuget Package
-            inputs:
-              command: 'pack'
-              includesymbols: false
-              includesource: false
-              versioningScheme: byEnvVar
-              versionEnvVar: PackageVersion
-              projects: 'src/Fg.IoTEdgeModule/Fg.IoTEdgeModule.csproj'
-              arguments: --configuration $(Build.Configuration)
-              buildProperties: 'VersionPrefix=$(PackageVersion)'
-              outputDir: $(Build.StagingDirectory)/nupkg
-          - task: PublishPipelineArtifact@1
-            displayName: 'Publish Artifact'
-            inputs:
-              targetPath: '$(Build.StagingDirectory)'
-              artifact: 'artifact'
-          - task: NuGetCommand@2
-            displayName: 'Push to NuGet.org'
-            inputs:
-              command: push
-              packagesToPush: '$(Build.StagingDirectory)/nupkg/*.nupkg'
-              nuGetFeedType: external
-              publishFeedCredentials: 'nuget-push'
+          
+        - task: NuGetToolInstaller@1
+          inputs:
+            versionSpec: '>=4.30'
+
+        - task: Powershell@2
+          displayName: 'Set version environment variable'
+          inputs:
+            targetType: inline
+            script: |
+              $versionSuffix = ""
+
+              # Double $ before the parameter expression to make sure that the return type is
+              # treated as a boolean.
+              if( $true -eq $${{parameters.PackagePreview}}) {
+                  $versionSuffix = "-beta-$(Build.BuildNumber)"
+              }
+
+              Write-Host "##vso[task.setvariable variable=PackageVersion]${{parameters.PackageMajorVersion}}.${{parameters.PackageMinorVersion}}.${{parameters.PackagePatchVersion}}$versionSuffix"
+
+        - task: DotNetCoreCLI@2
+          displayName: Package nuget Package
+          inputs:
+            command: 'pack'
+            includesymbols: false
+            includesource: false
+            versioningScheme: byEnvVar
+            versionEnvVar: PackageVersion
+            projects: 'src/Fg.IoTEdgeModule/Fg.IoTEdgeModule.csproj'
+            arguments: --configuration $(Build.Configuration)
+            buildProperties: 'VersionPrefix=$(PackageVersion)'
+            outputDir: $(Build.StagingDirectory)/nupkg
+
+        - task: PublishPipelineArtifact@1
+          displayName: 'Publish Artifact'
+          inputs:
+            targetPath: '$(Build.StagingDirectory)'
+            artifact: 'artifact'
+
+        - task: NuGetCommand@2
+          displayName: 'Push to NuGet.org'
+          inputs:
+            command: push
+            packagesToPush: '$(Build.StagingDirectory)/nupkg/*.nupkg'
+            nuGetFeedType: external
+            publishFeedCredentials: 'nuget-push'

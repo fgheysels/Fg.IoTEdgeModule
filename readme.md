@@ -134,3 +134,41 @@ using( var host = CreateHostBuilder().Build())
 ```
 
 Note that in the above code snippet we do not use `RunAsync`, but explicitly call `StartAsync` and `WaitForShutdownAsync`.  This is a [workaround](https://github.com/dotnet/runtime/issues/44086#issuecomment-811126003) for [this](https://github.com/dotnet/runtime/issues/44086) issue.
+
+### ModuleConfiguration
+
+This library contains an abstract `ModuleConfiguration` class that allows you to abstract configuration-settings for an IoT Edge module.
+The `ModuleConfiguration` class allows you to easily retrieve the desired properties from the module-twin and update the reported properties to the module twin as well.
+
+To use this functionality, you need to inherit from this base-class and implement some basic functionality:
+
+```csharp
+public class MyModuleConfiguration : ModuleConfiguration
+{
+    public int SomeIntegerProperty {get; private set;}
+    public string SomeStringProperty {get; private set;}
+
+    protected override void InitializeFromTwin(TwinCollection desiredProperties)
+    {
+        SomeIntegerProperty = Convert.ToInt32(desiredProperties["SomeIntegerConfigSetting"]);
+        SomeStringProperty = Convert.ToString(desiredProperties["SomeStringConfigSetting"]);
+    }
+
+    protected override void SetReportedProperties(TwinCollection reportedProperties)
+    {
+        reportedProperties["SomeIntegerConfigSetting"] = SomeIntegerProperty;
+        reportedProperties["SomeStringConfigSetting"] = SomeStringProperty;
+    }
+}
+```
+
+Usage:
+
+```csharp
+var configuration = await ModuleConfiguration.CreateFromTwinAsync<MyModuleConfiguration>(moduleClient, logger);
+
+// Use the settings that originate from the ModuleTwin in some other classes.
+var processor = new MyProcessor(configuration.SomeIntegerProperty);
+```
+
+

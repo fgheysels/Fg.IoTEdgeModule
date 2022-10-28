@@ -10,6 +10,7 @@
     <RepositoryType>Git</RepositoryType>
     <Description>Provides utilities to easily create Azure IoT Edge modules as a hosted service</Description>
     <PackageTags>Azure IoT Edge Host HostBuilder</PackageTags>
+    <LangVersion>10.0</LangVersion>
   </PropertyGroup>
 
   <ItemGroup>
