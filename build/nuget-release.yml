@@ -46,7 +46,7 @@ stages:
 
                 Write-Host "parameter: ${{parameters.PackagePreview}}"
 
-                if( true -eq ${{parameters.PackagePreview}}) {
+                if( $true -eq ${{parameters.PackagePreview}}) {
                     Write-Host "set version suffix"
                     $versionSuffix = "-preview.$(Rev:rr)"
                     Write-Host "version suffix is $versionSuffix"
