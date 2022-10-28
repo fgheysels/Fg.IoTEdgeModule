@@ -10,6 +10,8 @@ parameters:
   type: number
 - name: PackagePatchVersion
   type: number
+- name: PackagePreview
+  type: boolean  
 
 
 variables:
@@ -40,7 +42,13 @@ stages:
             inputs:
               targetType: inline
               script: |
-                Write-Host "##vso[task.setvariable variable=PackageVersion]${{parameters.PackageMajorVersion}}.${{parameters.PackageMinorVersion}}.${{parameters.PackagePatchVersion}}"           
+                $versionSuffix = ""
+
+                if( true -eq ${{parameters.PackagePreview}}) {
+                    $versionSuffix = "-preview.$(Rev:rr)"
+                }
+
+                Write-Host "##vso[task.setvariable variable=PackageVersion]${{parameters.PackageMajorVersion}}.${{parameters.PackageMinorVersion}}.${{parameters.PackagePatchVersion}}$versionSuffix"
           - task: DotNetCoreCLI@2
             displayName: Package nuget Package
             inputs:
