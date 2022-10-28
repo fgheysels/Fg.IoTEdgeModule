@@ -55,6 +55,10 @@ stages:
           vmImage: 'ubuntu-latest'  
         steps:
           
+        - task: NuGetToolInstaller@1
+          inputs:
+            versionSpec: '>=4.30'
+
           - task: DotNetCoreCLI@2
             displayName: Package nuget Package
             inputs:
