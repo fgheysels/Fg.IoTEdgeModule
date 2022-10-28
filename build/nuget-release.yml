@@ -36,7 +36,7 @@ stages:
 
               if( $true -eq $${{parameters.PackagePreview}}) {
                   Write-Host "set version suffix"
-                  $versionSuffix = "-preview-$(Build.BuildNumber)"
+                  $versionSuffix = "-beta-$(Build.BuildNumber)"
                   Write-Host "version suffix is $versionSuffix"
               }
 
