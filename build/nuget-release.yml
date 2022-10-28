@@ -24,7 +24,24 @@ stages:
       - job: Compile_and_test
         pool:
           vmImage: 'ubuntu-latest'
-        steps:          
+        steps:
+        - task: Powershell@2
+          displayName: 'Set version environment variable'
+          inputs:
+            targetType: inline
+            script: |
+              $versionSuffix = ""
+
+              Write-Host "parameter: ${{parameters.PackagePreview}}"
+
+              if( $true -eq $${{parameters.PackagePreview}}) {
+                  Write-Host "set version suffix"
+                  $versionSuffix = "-preview.$(Rev:rr)"
+                  Write-Host "version suffix is $versionSuffix"
+              }
+
+              Write-Host "##vso[task.setvariable variable=PackageVersion]${{parameters.PackageMajorVersion}}.${{parameters.PackageMinorVersion}}.${{parameters.PackagePatchVersion}}$versionSuffix"
+
           - task: DotNetCoreCLI@2
             displayName: 'Build Fg.IoTEdgeModule solution'
             inputs:
@@ -37,22 +54,7 @@ stages:
         pool:
           vmImage: 'ubuntu-latest'  
         steps:
-          - task: Powershell@2
-            displayName: 'Set version environment variable'
-            inputs:
-              targetType: inline
-              script: |
-                $versionSuffix = ""
-
-                Write-Host "parameter: ${{parameters.PackagePreview}}"
-
-                if( $true -eq $${{parameters.PackagePreview}}) {
-                    Write-Host "set version suffix"
-                    $versionSuffix = "-preview.$(Rev:rr)"
-                    Write-Host "version suffix is $versionSuffix"
-                }
-
-                Write-Host "##vso[task.setvariable variable=PackageVersion]${{parameters.PackageMajorVersion}}.${{parameters.PackageMinorVersion}}.${{parameters.PackagePatchVersion}}$versionSuffix"
+          
           - task: DotNetCoreCLI@2
             displayName: Package nuget Package
             inputs:
