@@ -1,4 +1,4 @@
-name: $(date:yyyyMMdd)$(rev:.rr)
+name: $(date:yyyyMMdd)$(rev:_rr)
 
 trigger: none
 pr: none
