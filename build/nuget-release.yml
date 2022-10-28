@@ -1,4 +1,4 @@
-name: $(date:yyyyMMdd)$(rev:.r)
+name: $(date:yyyyMMdd)$(rev:.rr)
 
 trigger: none
 pr: none
@@ -36,7 +36,7 @@ stages:
 
               if( $true -eq $${{parameters.PackagePreview}}) {
                   Write-Host "set version suffix"
-                  $versionSuffix = "-preview.$(Rev:rr)"
+                  $versionSuffix = "-preview.$(Build.BuildNumber)"
                   Write-Host "version suffix is $versionSuffix"
               }
 
@@ -45,7 +45,7 @@ stages:
         - task: DotNetCoreCLI@2
           displayName: 'Build Fg.IoTEdgeModule solution'
           inputs:
-            projects: 'src/Fg.IoTEdgeModule.sln'    
+            projects: 'src/Fg.IoTEdgeModule.sln'
             arguments: --configuration $(Build.Configuration) 
 
   - stage: Release
