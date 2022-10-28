@@ -18,6 +18,10 @@ namespace Fg.IoTEdgeModule.Configuration
 
         protected abstract string ModuleName { get; }
 
+        /// <summary>
+        /// Instantiate a <paramref name="TModuleConfiguration"/> instance and populate the configuration properties
+        /// with values that are defined in the Module Twin.
+        /// </summary>
         public static async Task<TModuleConfiguration> CreateFromTwinAsync<TModuleConfiguration>(ModuleClient moduleClient, ILogger logger) where TModuleConfiguration : ModuleConfiguration
         {
             var config =
@@ -58,6 +62,10 @@ namespace Fg.IoTEdgeModule.Configuration
             }
         }
 
+        /// <summary>
+        /// Get the Module's specific Configuration settings from the desiredProperties TwinCollection of the module Twin.
+        /// </summary>
+        /// <param name="desiredProperties">The TwinCollection that contains the desired properties from the Module Twin.</param>
         protected abstract void InitializeFromTwin(TwinCollection desiredProperties);
 
         /// <summary>
