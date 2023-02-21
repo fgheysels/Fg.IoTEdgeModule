@@ -45,6 +45,26 @@ namespace Fg.IoTEdgeModule.Configuration
         }
 
         /// <summary>
+        /// Instantiate a <paramref name="TModuleConfiguration"/> instance and populate the configuration properties
+        /// with values that are present in the <paramref name="desiredProperties"/> twin-collection.
+        /// </summary>
+        /// <remarks>Use this method for testing your <see cref="ModuleConfiguration"/> implementation.</remarks>
+        public static TModuleConfiguration CreateFromTwin<TModuleConfiguration>(TwinCollection desiredProperties, ILogger logger) where TModuleConfiguration : ModuleConfiguration
+        {
+            var config =
+                (TModuleConfiguration)Activator.CreateInstance(
+                    typeof(TModuleConfiguration),
+                    BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic,
+                    null,
+                    new object[] { logger },
+                    null);
+
+            config.InitializeFromTwin(desiredProperties);
+
+            return config;
+        }
+
+        /// <summary>
         /// Reports the configuration settings via the Module Twin reported properties.
         /// </summary>
         /// <param name="moduleClient">The ModuleClient that must be used to communicate.</param>

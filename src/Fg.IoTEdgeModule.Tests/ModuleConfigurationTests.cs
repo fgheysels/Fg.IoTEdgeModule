@@ -1,4 +1,3 @@
-using System.Security.Cryptography.X509Certificates;
 using Fg.IoTEdgeModule.Configuration;
 using Microsoft.Azure.Devices.Client;
 using Microsoft.Azure.Devices.Shared;
@@ -11,7 +10,7 @@ namespace Fg.IoTEdgeModule.Tests
     {
         public ModuleConfigurationTests(EnvironmentFixture environmentFixture)
         {
-                
+
         }
 
         [Fact]
@@ -25,18 +24,35 @@ namespace Fg.IoTEdgeModule.Tests
             Assert.NotNull(config);
         }
 
+        [Fact]
+        public void CanInitializeConfiguration()
+        {
+            var desiredProperties = new TwinCollection("""{"SomeIntProperty":42, "SomeStringProperty": "stringvalue"}""");
+
+            var config = ModuleConfiguration.CreateFromTwin<TestModuleConfiguration>(desiredProperties, NullLogger.Instance);
+
+            Assert.Equal(42, config.SomeIntProperty);
+            Assert.Equal("stringvalue", config.SomeStringProperty);
+        }
+
         private class TestModuleConfiguration : ModuleConfiguration
         {
-           public TestModuleConfiguration(ILogger logger):base(logger){}
+            public TestModuleConfiguration(ILogger logger) : base(logger) { }
+
             protected override string ModuleName => "TestModule";
+           
+            public int SomeIntProperty { get; private set; }
+            public string SomeStringProperty { get; private set; }
+            
             protected override void InitializeFromTwin(TwinCollection desiredProperties)
             {
-                int x = desiredProperties.Count;
+                SomeIntProperty = desiredProperties["SomeIntProperty"];
+                SomeStringProperty = desiredProperties["SomeStringProperty"];
             }
 
             protected override void SetReportedProperties(TwinCollection reportedProperties)
             {
-             
+
             }
         }
     }
